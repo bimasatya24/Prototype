@@ -17,7 +17,7 @@ export default async function ManagementDashboard(props: {
   const adminId = cookieStore.get("adminId")?.value;
 
   if (!adminId) {
-    redirect("/login");
+    redirect("/");
   }
 
   const searchParams = await props.searchParams;
@@ -29,7 +29,7 @@ export default async function ManagementDashboard(props: {
   });
 
   if (!admin) {
-    redirect("/login");
+    redirect("/");
   }
 
   // Data Fetching
@@ -127,7 +127,7 @@ export default async function ManagementDashboard(props: {
                   </Link>
                 </li>
                 <li className="mt-1">
-                  <Link href={"/login"} className="py-3 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 flex items-center gap-3">
+                  <Link href={"/"} className="py-3 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 flex items-center gap-3">
                     <FontAwesomeIcon icon={faRightFromBracket} className="w-4 h-4" />
                     <span className="font-bold">Keluar</span>
                   </Link>

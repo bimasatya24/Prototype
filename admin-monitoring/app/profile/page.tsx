@@ -11,7 +11,7 @@ export default async function AdminProfilePage() {
   const adminIdStr = cookieStore.get("adminId")?.value;
 
   if (!adminIdStr) {
-    redirect("/login");
+    redirect("/");
   }
 
   const adminId = parseInt(adminIdStr, 10);
@@ -20,7 +20,7 @@ export default async function AdminProfilePage() {
   });
 
   if (!admin) {
-    redirect("/login");
+    redirect("/");
   }
 
   async function updateAdminAction(formData: FormData) {

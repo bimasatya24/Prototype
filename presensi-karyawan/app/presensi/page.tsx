@@ -19,7 +19,7 @@ export default async function Page(props: {
   const userId = cookieStore.get("userId")?.value;
 
   if (!userId) {
-    redirect("/login");
+    redirect("/");
   }
 
   const currentUser = await prisma.user.findUnique({
@@ -27,7 +27,7 @@ export default async function Page(props: {
   });
 
   if (!currentUser) {
-    redirect("/login");
+    redirect("/");
   }
 
   const allPresensi = await prisma.presensi.findMany({
@@ -99,7 +99,7 @@ export default async function Page(props: {
                   </Link>
                 </li>
                 <li className="mt-1">
-                  <Link href={"/login"} className="py-2.5 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10">
+                  <Link href={"/"} className="py-2.5 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10">
                     <FontAwesomeIcon icon={faRightFromBracket} className="size-4" />
                     Keluar
                   </Link>

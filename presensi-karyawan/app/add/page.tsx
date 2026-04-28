@@ -13,12 +13,12 @@ export default async function Page() {
   const cookieUserId = cookieStore.get("userId")?.value;
 
   if (!cookieUserId) {
-    redirect("/login");
+    redirect("/");
   }
 
   const userId = parseInt(cookieUserId, 10);
   if (isNaN(userId)) {
-    redirect("/login");
+    redirect("/");
   }
 
   const user = await prisma.user.findUnique({
@@ -26,7 +26,7 @@ export default async function Page() {
   });
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   async function addPresensi(formData: FormData) {

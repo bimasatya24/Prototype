@@ -18,7 +18,7 @@ export default async function Page() {
   const userId = cookieStore.get("userId")?.value;
 
   if (!userId) {
-    redirect("/login");
+    redirect("/");
   }
 
   const user = await prisma.user.findUnique({
@@ -26,7 +26,7 @@ export default async function Page() {
   });
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   async function updateProfile(formData: FormData) {
