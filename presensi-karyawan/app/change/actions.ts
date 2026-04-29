@@ -44,6 +44,6 @@ export async function changePasswordAction(prevState: any, formData: FormData) {
     return { error: 'Terjadi kesalahan saat mengubah kata sandi.' }
   }
 
-  // Redirect langsung ke Halaman /presensi
-  redirect('/presensi')
+  // Redirect langsung ke Halaman /login
+  redirect('/login')
 }
