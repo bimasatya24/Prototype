@@ -21,35 +21,37 @@ export default function Home() {
           Selamat datang di portal presensi karyawan Pabrik Roti Bread Gift!
         </p>
 
-        <Link
-          href="/login"
-          className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-orange-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-600 active:bg-orange-700 hover:bg-orange-500 shadow-lg shadow-orange-600/30"
-        >
-          Login Presensi
-          <svg className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        </Link>
+        <div className="flex flex-col items-center gap-3">
+          <Link
+            href="/login"
+            className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-orange-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-600 active:bg-orange-700 hover:bg-orange-500 shadow-lg shadow-orange-600/30"
+          >
+            Login Presensi
+            <svg className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
 
-        <Link
-          href="/register"
-          className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-orange-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-600 active:bg-orange-700 hover:bg-orange-500 shadow-lg shadow-orange-600/30 m-3"
-        >
-          Daftar Akun
-          <svg className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        </Link>
+          <Link
+            href="/register"
+            className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-orange-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-600 active:bg-orange-700 hover:bg-orange-500 shadow-lg shadow-orange-600/30"
+          >
+            Daftar Akun
+            <svg className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
 
-        <Link
-          href="/change"
-          className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-orange-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-600 active:bg-orange-700 hover:bg-orange-500 shadow-lg shadow-orange-600/30 m-3"
-        >
-          Lupa Password
-          <svg className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        </Link>
+          <Link
+            href="/change"
+            className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-orange-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-600 active:bg-orange-700 hover:bg-orange-500 shadow-lg shadow-orange-600/30"
+          >
+            Lupa Password
+            <svg className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
+        </div>
 
         <div className="mt-12 pt-8 border-t border-white/5">
           <p className="text-slate-500 text-sm">
