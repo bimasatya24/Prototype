@@ -20,7 +20,7 @@ export async function adminLoginAction(prevState: any, formData: FormData) {
   })
 
   if (!admin) {
-    return { error: 'Nama atau Kata Sandi salah.' }
+    return { error: 'Nama tidak ditemukan.' }
   }
 
   // Cek apakah password cocok (mendukung teks biasa untuk sementara ATAU bcrypt)

@@ -19,7 +19,11 @@ export async function loginAction(prevState: any, formData: FormData) {
     },
   })
 
-  if (!user || !(await bcrypt.compare(kata_sandi, user.kata_sandi))) {
+  if (!user) {
+    return { error: 'Nama tidak ditemukan.' }
+  }
+
+  if (!(await bcrypt.compare(kata_sandi, user.kata_sandi))) {
     return { error: 'Nama atau kata sandi salah.' }
   }
 
