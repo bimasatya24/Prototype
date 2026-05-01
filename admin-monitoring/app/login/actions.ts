@@ -35,7 +35,7 @@ export async function adminLoginAction(prevState: any, formData: FormData) {
   }
 
   if (!isPlainTextMatch && !isBcryptMatch) {
-    return { error: 'Nama atau Kata Sandi salah.' }
+    return { error: 'Kata sandi salah.' }
   }
 
   const cookieStore = await cookies()

@@ -24,7 +24,7 @@ export async function loginAction(prevState: any, formData: FormData) {
   }
 
   if (!(await bcrypt.compare(kata_sandi, user.kata_sandi))) {
-    return { error: 'Nama atau kata sandi salah.' }
+    return { error: 'Kata Sandi salah.' }
   }
 
   const cookieStore = await cookies()

@@ -28,7 +28,7 @@ export async function registerAction(prevState: any, formData: FormData) {
     if (existingUser.nama === nama) {
       return { error: 'Nama user sudah ada.' }
     }
-    return { error: 'Email sudah terdaftar.' }
+    return { error: 'Email sudah ada.' }
   }
 
   // Hash password
