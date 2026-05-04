@@ -23,6 +23,7 @@ model User {
   nama String
   email String @unique
   kata_sandi String
+  waktu_daftar DateTime @default(now())
 
   presensi Presensi[]
 }

@@ -1,20 +1,15 @@
 import prisma from "@/app/lib/prisma";
 
-const START_DATE_STR = "2026-04-17";
-
 /**
  * Utility to fetch attendance records merged with virtual "Alpha" records 
  * for days when a user did not record attendance.
  * 
  * Rules:
- * 1. Tracking starts from START_DATE_STR.
+ * 1. Tracking starts from the user's account creation date (waktu_daftar).
  * 2. Fridays are holidays (no Alpha records).
  * 3. Scope: Admin dashboard and Excel export.
  */
 export async function getAttendanceWithAlphas(search: string = "", statusFilter: string = "Semua") {
-  const startDate = new Date(START_DATE_STR);
-  startDate.setHours(0, 0, 0, 0);
-  
   const today = new Date();
   today.setHours(23, 59, 59, 999);
 
@@ -25,11 +20,24 @@ export async function getAttendanceWithAlphas(search: string = "", statusFilter:
     },
   });
 
-  // 2. Get all real attendance records from start date until today
+  // Find the earliest registration date to optimize the real records query
+  let globalStartDate = new Date();
+  if (allUsers.length > 0) {
+    const validDates = allUsers
+      .map((u: any) => u.waktu_daftar ? new Date(u.waktu_daftar).getTime() : NaN)
+      .filter((time: number) => !isNaN(time));
+    
+    if (validDates.length > 0) {
+      globalStartDate = new Date(Math.min(...validDates));
+    }
+  }
+  globalStartDate.setHours(0, 0, 0, 0);
+
+  // 2. Get all real attendance records from the earliest start date until today
   const realRecords = await prisma.presensi.findMany({
     where: {
       presensi: {
-        gte: startDate,
+        gte: globalStartDate,
         lte: today,
       },
       user: {
@@ -55,18 +63,22 @@ export async function getAttendanceWithAlphas(search: string = "", statusFilter:
   const end = new Date();
   end.setHours(23, 59, 59, 999);
   
-  // Iterate through each day since START_DATE
-  for (let d = new Date(startDate); d <= end; d.setDate(d.getDate() + 1)) {
-    const currentDay = new Date(d);
-    
-    // Friday is Holiday (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
-    if (currentDay.getDay() === 5) continue;
+  for (const user of allUsers) {
+    // Gunakan waktu hari ini sebagai fallback jika waktu_daftar kosong/invalid
+    let userStartDate = new Date();
+    if ((user as any).waktu_daftar && !isNaN(new Date((user as any).waktu_daftar).getTime())) {
+      userStartDate = new Date((user as any).waktu_daftar);
+    }
+    userStartDate.setHours(0, 0, 0, 0);
 
-    const dateStr = currentDay.toLocaleDateString("en-CA");
+    // Iterate through each day since the user's registration date
+    for (let d = new Date(userStartDate); d <= end; d.setDate(d.getDate() + 1)) {
+      const currentDay = new Date(d);
+      
+      // Friday is Holiday (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
+      if (currentDay.getDay() === 5) continue;
 
-    for (const user of allUsers) {
-      // Admin (usually ID 1) could be excluded, but we'll follow current logic and include them 
-      // unless specified otherwise, as they are part of "Total Karyawan"
+      const dateStr = currentDay.toLocaleDateString("en-CA");
       const hasRecord = recordMap.get(user.id)?.has(dateStr);
 
       if (!hasRecord) {
