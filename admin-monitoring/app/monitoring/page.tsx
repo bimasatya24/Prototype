@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMagnifyingGlass, faTrash, faFilter, faUsers, faCheckDouble, faTriangleExclamation, faHospital, faCircleXmark, faUserGear, faRightFromBracket, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { faMagnifyingGlass, faTrash, faFilter, faUsers, faCheckDouble, faTriangleExclamation, faHospital, faCircleXmark, faUserGear, faRightFromBracket, faChevronDown, faCalendarDays, faList } from '@fortawesome/free-solid-svg-icons'
 import prisma from '@/app/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -11,7 +11,7 @@ import { faCircleUser } from '@fortawesome/free-solid-svg-icons/faCircleUser'
 import { getAttendanceWithAlphas } from '../lib/attendanceUtils'
 
 export default async function ManagementDashboard(props: {
-  searchParams: Promise<{ search?: string; status?: string }>;
+  searchParams: Promise<{ search?: string; status?: string; alphaMonth?: string; alphaYear?: string }>;
 }) {
   const cookieStore = await cookies();
   const adminId = cookieStore.get("adminId")?.value;
@@ -23,6 +23,8 @@ export default async function ManagementDashboard(props: {
   const searchParams = await props.searchParams;
   const search = searchParams.search || "";
   const statusFilter = searchParams.status || "Semua";
+  const alphaMonth = searchParams.alphaMonth || (new Date().getMonth() + 1).toString();
+  const alphaYear = searchParams.alphaYear || new Date().getFullYear().toString();
 
   const admin = await prisma.admin.findUnique({
     where: { id: parseInt(adminId, 10) }
@@ -60,6 +62,27 @@ export default async function ManagementDashboard(props: {
   // For download data, we want ALL statuses and the same search criteria (or no search if preferred)
   // The user wants the same as what's in the program and excel
   const downloadData = await getAttendanceWithAlphas(search, "Semua");
+
+  // Calculate Alpha Stats based on selected month and year
+  const alphaStatsMap = new Map<number, { user: any, count: number, records: any[] }>();
+  
+  // Filter allPresensi specifically for the Alpha Monitoring section
+  allPresensi.forEach((p: any) => {
+    const d = new Date(p.presensi);
+    const m = (d.getMonth() + 1).toString();
+    const y = d.getFullYear().toString();
+    
+    if (p.status === 'Alpha' && m === alphaMonth && y === alphaYear) {
+      if (!alphaStatsMap.has(p.userID)) {
+        alphaStatsMap.set(p.userID, { user: p.user, count: 0, records: [] });
+      }
+      const stat = alphaStatsMap.get(p.userID)!;
+      stat.count++;
+      stat.records.push(p);
+    }
+  });
+
+  const alphaStatsArray = Array.from(alphaStatsMap.values()).sort((a, b) => b.count - a.count);
 
   const todayHadir = todayStats.find(s => s.status === 'Hadir')?._count || 0;
   const todaySakit = todayStats.find(s => s.status === 'Sakit')?._count || 0;
@@ -115,7 +138,7 @@ export default async function ManagementDashboard(props: {
                   <FontAwesomeIcon icon={faUserGear} className="w-4 h-4" />
                 </div>
                 <div className="text-left hidden sm:block">
-                  <p className="text-xs font-black text-white leading-tight uppercase tracking-tighter">{admin.nama}</p>
+                  <p className="text-xs font-black text-white leading-tight tracking-tighter">{admin.nama}</p>
                 </div>
                 <FontAwesomeIcon icon={faChevronDown} className="text-[10px] text-slate-500" />
               </div>
@@ -154,6 +177,87 @@ export default async function ManagementDashboard(props: {
           ))}
         </div>
 
+        {/* Alpha Monitoring Section */}
+        <div className="overflow-hidden rounded-[2.5rem] border border-white/8 glass shadow-2xl relative">
+          <div className="bg-white/3 px-8 py-5 border-b border-white/8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500 shadow-inner">
+                <FontAwesomeIcon icon={faCalendarDays} className="w-4 h-4" />
+              </div>
+              <h2 className="text-sm font-black text-white uppercase tracking-widest">Monitoring Karyawan</h2>
+            </div>
+            
+            {/* Filter Bulan dan Tahun */}
+            <form method="get" className="flex items-center gap-2">
+              <input type="hidden" name="search" value={search} />
+              <input type="hidden" name="status" value={statusFilter} />
+              <select name="alphaMonth" defaultValue={alphaMonth} className="select select-bordered select-sm bg-white/5 border-white/10 text-white focus:border-red-500 rounded-xl px-4 py-1.5">
+                {Array.from({length: 12}, (_, i) => i + 1).map(m => (
+                  <option key={m} value={m.toString()}>{new Date(0, m - 1).toLocaleString('id-ID', { month: 'long' })}</option>
+                ))}
+              </select>
+              <select name="alphaYear" defaultValue={alphaYear} className="select select-bordered select-sm bg-white/5 border-white/10 text-white focus:border-red-500 rounded-xl px-4 py-1.5">
+                {[new Date().getFullYear() - 1, new Date().getFullYear(), new Date().getFullYear() + 1].map(y => (
+                  <option key={y} value={y.toString()}>{y}</option>
+                ))}
+              </select>
+              <button type="submit" className="btn btn-sm btn-ghost glass text-white hover:text-emerald-400">Set</button>
+            </form>
+          </div>
+
+          <div className="overflow-x-auto p-4 sm:p-6">
+            <table className="table w-full border-separate border-spacing-0">
+              <thead>
+                <tr className="bg-white/5 text-white text-[10px] uppercase tracking-[0.2em] font-black">
+                  <th className="px-6 py-4 rounded-tl-2xl border-none">Nama Karyawan</th>
+                  <th className="px-6 py-4 text-center border-none">Jumlah Alpha</th>
+                  <th className="px-6 py-4 text-center rounded-tr-2xl border-none">Detail</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {alphaStatsArray.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-12 text-center text-slate-400 text-sm font-medium italic border-none bg-white/2 rounded-b-2xl">
+                      Tidak ada karyawan yang Alpha pada bulan ini.
+                    </td>
+                  </tr>
+                ) : (
+                  alphaStatsArray.map((stat, idx) => (
+                    <tr key={`alpha_row_${stat.user.id}`} className={`group hover:bg-red-500/5 transition-colors border-none ${idx === alphaStatsArray.length - 1 ? '[&>td:first-child]:rounded-bl-2xl [&>td:last-child]:rounded-br-2xl' : ''}`}>
+                      <td className="px-6 py-4 border-none bg-white/2">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center overflow-hidden border border-white/10 group-hover:border-red-500/30 transition-colors">
+                            {stat.user.gambar ? (
+                              <img src={stat.user.gambar} className="w-full h-full object-cover" alt="User" />
+                            ) : (
+                              <FontAwesomeIcon icon={faCircleUser} className="text-xl text-slate-500" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-white group-hover:text-red-400 transition-colors">{stat.user.nama}</p>
+                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{stat.user.id === 1 ? "Admin" : "Karyawan"}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center border-none bg-white/2">
+                        <div className="inline-flex items-center justify-center px-3 py-1 rounded-lg bg-red-500/10 text-red-400 font-black text-xs border border-red-500/20">
+                          {stat.count} Kali
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center border-none bg-white/2">
+                        <label htmlFor={`alpha_modal_${stat.user.id}`} className="btn btn-sm glass text-white hover:bg-red-500 hover:text-white border border-white/10 hover:border-red-500 transition-all cursor-pointer">
+                          <FontAwesomeIcon icon={faList} className="w-3.5 h-3.5 mr-2" />
+                          Detail
+                        </label>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         {/* Action Controls */}
         <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
           <div className="flex flex-col sm:flex-row gap-4 w-full xl:max-w-3xl">
@@ -171,6 +275,8 @@ export default async function ManagementDashboard(props: {
                 defaultValue={search}
               />
               <input type="hidden" name="status" value={statusFilter} />
+              <input type="hidden" name="alphaMonth" value={alphaMonth} />
+              <input type="hidden" name="alphaYear" value={alphaYear} />
             </form>
 
             {/* Filter Tabs */}
@@ -178,7 +284,7 @@ export default async function ManagementDashboard(props: {
               {["Semua", "Hadir", "Izin", "Sakit", "Alpha"].map((filter) => (
                 <Link
                   key={filter}
-                  href={`?search=${search}&status=${filter}`}
+                  href={`?search=${search}&status=${filter}&alphaMonth=${alphaMonth}&alphaYear=${alphaYear}`}
                   className={`px-5 flex items-center rounded-xl text-xs font-bold transition-all uppercase tracking-wider ${statusFilter === filter ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
                 >
                   {filter}
@@ -321,6 +427,56 @@ export default async function ManagementDashboard(props: {
           </div>
         </div>
 
+      </div>
+
+      {/* Alpha Detail Modals */}
+      <div className="relative z-100">
+        {alphaStatsArray.map((stat) => (
+          <React.Fragment key={`alpha_modal_${stat.user.id}`}>
+            <input type="checkbox" id={`alpha_modal_${stat.user.id}`} className="modal-toggle" />
+            <div className="modal" role="dialog">
+              <div className="modal-box bg-slate-900 border border-white/10 p-0 overflow-hidden max-w-md shadow-2xl relative rounded-[2rem]">
+                <div className="p-6 bg-red-500/10 border-b border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500">
+                      <FontAwesomeIcon icon={faCircleXmark} className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-white">Detail Alpha</h3>
+                      <p className="text-xs text-red-400 font-bold uppercase tracking-widest">{stat.user.nama}</p>
+                    </div>
+                  </div>
+                  <label htmlFor={`alpha_modal_${stat.user.id}`} className="btn btn-circle btn-sm glass border-white/20 text-white hover:bg-white/20">✕</label>
+                </div>
+                <div className="p-0 max-h-[50vh] overflow-y-auto">
+                  <table className="table w-full border-separate border-spacing-0">
+                    <thead className="sticky top-0 bg-slate-900 z-10">
+                      <tr className="bg-red-500/10 text-white text-[10px] uppercase tracking-[0.2em] font-black">
+                        <th className="px-6 py-4 border-b border-white/10">Tanggal</th>
+                        <th className="px-6 py-4 border-b border-white/10 text-center">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {stat.records.sort((a, b) => new Date(b.presensi).getTime() - new Date(a.presensi).getTime()).map((record: any) => (
+                        <tr key={`alpha_record_${record.id}`} className="hover:bg-red-500/5 transition-colors border-none">
+                          <td className="px-6 py-4 border-none">
+                            <span className="text-xs font-bold text-slate-300">
+                              {new Date(record.presensi).toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-center border-none">
+                            <div className="badge badge-sm bg-red-500/20 text-red-400 border-none font-black uppercase tracking-widest text-[8px]">Alpha</div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <label className="modal-backdrop" htmlFor={`alpha_modal_${stat.user.id}`}>Close</label>
+            </div>
+          </React.Fragment>
+        ))}
       </div>
 
       {/* Attendance Photo Modals (Rendered outside z-index containers to prevent navbar overlap) */}
