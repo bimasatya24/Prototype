@@ -78,7 +78,7 @@ export default function Login() {
                 <span className="loading loading-spinner text-white"></span>
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faArrowRightToBracket} className="mr-2 group-hover:translate-x-1 transition-transform" />
+                  <FontAwesomeIcon icon={faArrowRightToBracket} className="mr-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   Masuk
                 </>
               )}

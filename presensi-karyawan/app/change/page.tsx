@@ -96,7 +96,7 @@ export default function LupaPassword() {
                 <span className="loading loading-spinner text-white"></span>
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faSave} className="mr-2 group-hover:scale-110 transition-transform" />
+                  <FontAwesomeIcon icon={faSave} className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
                   Simpan
                 </>
               )}

@@ -95,7 +95,7 @@ export default function Register() {
                 <span className="loading loading-spinner text-white"></span>
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faUserPlus} className="mr-2 group-hover:scale-110 transition-transform" />
+                  <FontAwesomeIcon icon={faUserPlus} className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
                   Daftar
                 </>
               )}

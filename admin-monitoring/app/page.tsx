@@ -41,14 +41,14 @@ export default function Home() {
                                 className="btn h-14 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border-none text-white font-bold text-lg rounded-2xl shadow-xl shadow-blue-900/20 active:scale-[0.98] transition-all group"
                             >
                                 Login Admin
-                                <FontAwesomeIcon icon={faRightToBracket} className="ml-3 group-hover:translate-x-1 transition-transform" />
+                                <FontAwesomeIcon icon={faRightToBracket} className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
 
                             <Link
                                 href="/register"
                                 className="btn h-14 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-lg rounded-2xl active:scale-[0.98] transition-all group backdrop-blur-sm"
                             >
-                                <FontAwesomeIcon icon={faUserPlus} className="mr-3 text-blue-400 group-hover:scale-110 transition-transform" />
+                                <FontAwesomeIcon icon={faUserPlus} className="mr-3 w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
                                 Tambah Admin
                             </Link>
                         </div>
