@@ -30,7 +30,7 @@ export default function Home() {
                                 Sistem <span className="text-white bg-clip-text bg-linear-to-r from-blue-400 to-indigo-400">Monitoring</span>
                             </h1>
                             <p className="text-slate-400 font-medium max-w-xs mx-auto leading-relaxed">
-                                Selamat datang di Sistem Monitoring Pabrik Roti Bread Gift
+                                Selamat datang di Sistem Monitoring Presensi Pabrik Roti Bread Gift
                             </p>
                         </div>
 
